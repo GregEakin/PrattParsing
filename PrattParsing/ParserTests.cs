@@ -18,10 +18,26 @@ public class ParserTests
 {
     private class ExprPrintVisitor : IExpressionVisitor<string>
     {
+        private static string ShowBop(Token.TokenType tokenType) =>
+            tokenType switch
+            {
+                Token.TokenType.Add => "+",
+                Token.TokenType.Sub => "-",
+                Token.TokenType.Mul => "*",
+                Token.TokenType.Div => "/",
+                Token.TokenType.Exp => "^",
+                Token.TokenType.LPar => "(",
+                Token.TokenType.RPar => ")",
+                Token.TokenType.Eof => "EOF",
+                // TokenType.Identifier => nameof(tt),
+                // TokenType.Integer => nameof(tt),
+                _ => throw new ArgumentOutOfRangeException(nameof(tokenType), tokenType, null)
+            };
+
         public string VisitVar(VarExpr expr) => expr.Name;
         public string VisitInt(IntExpr expr) => expr.Value.ToString();
         public string VisitBop(BopExpr expr)
-            => $"({expr.Left.Accept(this)} {Token.ShowBop(expr.Op)} {expr.Right.Accept(this)})";
+            => $"({expr.Left.Accept(this)} {ShowBop(expr.Op)} {expr.Right.Accept(this)})";
     }
 
     [Test]

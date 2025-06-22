@@ -47,5 +47,5 @@ public class BopExpr : Expression
         };
     }
 
-    public override string ToString() => $"({Left} {Token.ShowBop(Op)} {Right})";
+    public override string ToString() => $"({Left} {Op} {Right})";
 }

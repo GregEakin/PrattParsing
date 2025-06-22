@@ -71,20 +71,4 @@ public class Token
             TokenType.Eof => "EOF",
             _ => throw new ArgumentOutOfRangeException(nameof(Type), Type, null)
         };
-
-    public static string ShowBop(TokenType tokenType) =>
-        tokenType switch
-        {
-            TokenType.Add => "+",
-            TokenType.Sub => "-",
-            TokenType.Mul => "*",
-            TokenType.Div => "/",
-            TokenType.Exp => "^",
-            TokenType.LPar => "(",
-            TokenType.RPar => ")",
-            TokenType.Eof => "EOF",
-            // TokenType.Identifier => nameof(tt),
-            // TokenType.Integer => nameof(tt),
-            _ => throw new ArgumentOutOfRangeException(nameof(tokenType), tokenType, null)
-        };
 }
