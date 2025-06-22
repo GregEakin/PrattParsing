@@ -28,7 +28,7 @@ public class BopExpr : Expression
         Right = right;
     }
 
-    public override ExpressionKind Kind => ExpressionKind.Integer;
+    public override ExpressionKind Kind => ExpressionKind.BinaryOp;
 
     public override T Accept<T>(IExpressionVisitor<T> visitor) => visitor.VisitBop(this);
 
