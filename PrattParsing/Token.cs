@@ -45,6 +45,17 @@ public class Token
         End = end;
     }
 
+    public int Lbp() => 
+        Type switch
+        {
+            TokenType.Identifier or TokenType.LPar or TokenType.Integer or TokenType.RPar => 0,
+            TokenType.Add or TokenType.Sub => 2,
+            TokenType.Mul or TokenType.Div => 3,
+            TokenType.Exp => 4,
+            TokenType.Eof => -1,
+            _ => throw new ArgumentException($"Unknown token", nameof(Type))
+        };
+
     public override string ToString() =>
         Type switch
         {
@@ -61,8 +72,8 @@ public class Token
             _ => throw new ArgumentOutOfRangeException(nameof(Type), Type, null)
         };
 
-    public static string ShowBop(TokenType tt) =>
-        tt switch
+    public static string ShowBop(TokenType tokenType) =>
+        tokenType switch
         {
             TokenType.Add => "+",
             TokenType.Sub => "-",
@@ -74,6 +85,6 @@ public class Token
             TokenType.Eof => "EOF",
             // TokenType.Identifier => nameof(tt),
             // TokenType.Integer => nameof(tt),
-            _ => throw new ArgumentOutOfRangeException(nameof(tt), tt, null)
+            _ => throw new ArgumentOutOfRangeException(nameof(tokenType), tokenType, null)
         };
 }

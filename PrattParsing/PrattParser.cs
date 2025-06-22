@@ -21,7 +21,7 @@ public static class PrattParser
         var tokens = Lex(str);
         // Console.WriteLine(string.Join(",", tokens.Select(token => token.ToString())));
         var state = new ParseState(tokens);
-        var result = ParseState.Expr(state, 0);
+        var result = Expr(state, 0);
         return result;
     }
 
@@ -97,4 +97,66 @@ public static class PrattParser
         return tokens;
     }
 
+    public static Expression Expr(ParseState state, int limit)
+    {
+        Token Current() => state.Current;
+        void Advance() => state.Advance();
+
+        Expression Nud(Token token)
+        {
+            switch (token)
+            {
+                case { Type: Token.TokenType.Identifier, Identifier: not null }:
+                    return new VarExpr(token.Identifier, token.Start, token.End);
+
+                case { Type: Token.TokenType.Integer, IntegerValue: not null }:
+                    return new IntExpr(token.IntegerValue.Value, token.Start, token.End);
+
+                case { Type: Token.TokenType.LPar }:
+                {
+                    var expr = Expr(state, 0);
+                    if (Current().Type == Token.TokenType.RPar)
+                    {
+                        var start = token.Start;
+                        var end = Current().End;
+                        Advance(); // consume ')'
+                        // Wrap in a BopExpr or just return expr with updated span if you want
+                        // For now, just return expr (optionally update expr's Start/End if needed)
+                        return expr;
+                    }
+
+                    throw new ArgumentException("Expected closing parenthesis", nameof(token));
+                }
+
+                default:
+                    throw new ArgumentException($"No nud for {token}", nameof(token));
+            }
+        }
+
+        Expression Led(Expression left, Token token)
+        {
+            var right = Expr(state, token.Type switch
+            {
+                Token.TokenType.Exp => 5,
+                Token.TokenType.Mul => 3,
+                Token.TokenType.Div => 3,
+                _ => 2
+            });
+
+            return new BopExpr(token.Type, left, right, left.Start, right.End);
+        }
+
+        // --- Pratt parsing core ---
+        var first = Current();
+        Advance();
+        var left = Nud(first);
+        while (Current().Lbp() > limit)
+        {
+            var next = Current();
+            Advance();
+            left = Led(left, next);
+        }
+
+        return left;
+    }
 }
