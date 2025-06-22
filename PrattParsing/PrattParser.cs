@@ -115,17 +115,15 @@ public static class PrattParser
                 case { Type: Token.TokenType.LPar }:
                 {
                     var expr = Expr(state, 0);
-                    if (Current().Type == Token.TokenType.RPar)
-                    {
-                        var start = token.Start;
-                        var end = Current().End;
-                        Advance(); // consume ')'
-                        // Wrap in a BopExpr or just return expr with updated span if you want
-                        // For now, just return expr (optionally update expr's Start/End if needed)
-                        return expr;
-                    }
+                    if (Current().Type != Token.TokenType.RPar)
+                        throw new ArgumentException("Expected closing paren", nameof(token));
 
-                    throw new ArgumentException("Expected closing parenthesis", nameof(token));
+                    var start = token.Start;
+                    var end = Current().End;
+                    Advance(); // consume ')'
+                    // Wrap in a BopExpr or just return expr with updated span if you want
+                    // For now, just return expr (optionally update expr's Start/End if needed)
+                    return expr;
                 }
 
                 default:
@@ -135,14 +133,14 @@ public static class PrattParser
 
         Expression Led(Expression left, Token token)
         {
-            var right = Expr(state, token.Type switch
+            var nextLimit = token.Type switch
             {
                 Token.TokenType.Exp => 5,
                 Token.TokenType.Mul => 3,
                 Token.TokenType.Div => 3,
                 _ => 2
-            });
-
+            };
+            var right = Expr(state, nextLimit);
             return new BopExpr(token.Type, left, right, left.Start, right.End);
         }
 

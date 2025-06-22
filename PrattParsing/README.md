@@ -47,7 +47,7 @@
          let e = expr 0 in
          (match current() with
           | RPAR -> advance (); e
-          | _ -> failwith "Expected closing parenthesis")
+          | _ -> failwith "Expected closing paren")
       | t -> failwith (Printf.sprintf "No nud for %s" (Token.show t))
     and led = function
       | ADD -> Bop (Add, left, expr 2)
